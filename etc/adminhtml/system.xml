@@ -66,12 +66,12 @@
 		</section>
 		<section id="veslicense" translate="label" type="text" sortOrder="990" showInDefault="1" showInWebsite="1" showInStore="1">
 			<class>separator-top</class>
-			<label>Mange Licenses</label>
+			<label>Manage Licenses</label>
 			<tab>vesalltab</tab>
 			<resource>Ves_All::config</resource>
 			<group id="general" translate="label" type="text" sortOrder="0" showInDefault="1" showInWebsite="1" showInStore="1">
 				<field id="licenses" translate="label comment" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
-					<label>Mange Licenses</label>
+					<label>Manage Licenses</label>
 					<frontend_model>Ves\All\Block\Adminhtml\System\ListLicense</frontend_model>
 				</field>
 			</group>

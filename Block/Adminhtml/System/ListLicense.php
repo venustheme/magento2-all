@@ -133,7 +133,11 @@ class ListLicense extends \Magento\Config\Block\System\Config\Form\Field
             $opts = array(
                     'ssl' => array(
                         'verify_peer' => false,
-                        'verify_peer_name' => false
+                        'verify_peer_name' => false,
+                        'allow_self_signed' => true
+                    ),
+                    'http' => array(
+                        'user_agent' => 'PHPSoapClient'
                     )
                 );
             $context = stream_context_create($opts);
@@ -141,6 +145,7 @@ class ListLicense extends \Magento\Config\Block\System\Config\Form\Field
                             'verifypeer' => false,
                             'verifyhost' => false,
                             'exceptions' => 1,
+                            'cache_wsdl' => WSDL_CACHE_NONE,
                             'stream_context'=>$context);
 
             $proxy = new \SoapClient(self::API_URL, $params);
@@ -167,6 +172,7 @@ class ListLicense extends \Magento\Config\Block\System\Config\Form\Field
                         $_product['purl']           = $xmlData->item_url;
                         $_product['item_title']     = $xmlData->item_title;
                         $_product['version']        = $xmlData->version;
+                        $_product['license']        = (string)$xmlData->key;
                         $extensions[] = $_product;
                         break;
                     }
@@ -185,6 +191,9 @@ class ListLicense extends \Magento\Config\Block\System\Config\Form\Field
             foreach ($extensions as $_extension) {
                 $name = str_replace('[licenses]', '[' . str_replace(['-','_',' '], [''], $_extension['sku']) . ']', $element->getName());
                 $value = $this->_helper->getConfig('general/' . str_replace(['-','_',' '], [''], $_extension['sku']),'veslicense');
+                if(!$value && isset($_extension['license']) && $_extension['license']){
+                    $value = $_extension['license'];
+                }
                 $baseUrl = $this->_storeManager->getStore()->getBaseUrl(
                     \Magento\Framework\UrlInterface::URL_TYPE_WEB,
                     $this->_storeManager->getStore()->isCurrentlySecure()
