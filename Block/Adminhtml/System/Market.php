@@ -32,6 +32,8 @@ class Market extends \Magento\Config\Block\System\Config\Form\Field
      */
     protected $_resource;
 
+    protected $_key_path;
+
     /**
      * [__construct description]
      * @param \Magento\Backend\Block\Template\Context              $context       
@@ -62,6 +64,7 @@ class Market extends \Magento\Config\Block\System\Config\Form\Field
      */
     public function render(\Magento\Framework\Data\Form\Element\AbstractElement $element)
     {
+        /*
         if (!extension_loaded('soap')) {
             throw new \Magento\Framework\Webapi\Exception(
                 __('SOAP extension is not loaded.'),
@@ -90,7 +93,10 @@ class Market extends \Magento\Config\Block\System\Config\Form\Field
             $products = $proxy->call($sessionId, 'veslicense.productlist1');
         } catch(SoapFault $e){
 
-        }
+        }*/
+        //Get list products by curl:
+        $list_products = $this->getProductList();
+        $products = isset($list_products['products'])?$list_products['products']:[];
         $total = 12;
         $column = 2;
         $x = 0;
@@ -126,6 +132,41 @@ class Market extends \Magento\Config\Block\System\Config\Form\Field
         $html .= '</div>';
         
         return $this->_decorateRowHtml($element, $html);
+    }
+
+    public function getProductList() {
+        //Authentication rest API magento2, get access token
+        $key_path = $this->getKeyPath();
+        $url = ListLicense::getListUrl();
+        $data = array();
+        $crl = curl_init();
+        curl_setopt($crl, CURLOPT_SSL_VERIFYPEER, TRUE);
+        curl_setopt($crl, CURLOPT_CAPATH, $key_path);
+        curl_setopt($crl, CURLOPT_SSL_VERIFYHOST, 2);
+        curl_setopt($crl, CURLOPT_URL, $url);
+        curl_setopt($crl, CURLOPT_HEADER, 0);
+        curl_setopt($crl, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($crl, CURLOPT_POST, 1);
+        curl_setopt($crl, CURLOPT_POSTFIELDS, $data);
+        $response = curl_exec($crl);
+        if ($response) {
+        }
+        else {
+            echo 'An error has occurred: ' . curl_error($crl);
+            return[];
+        }
+        curl_close($crl);
+
+        return json_decode($response, true);
+    }
+    public function getKeyPath(){
+        if(!$this->_key_path){
+            $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+            $directory = $objectManager->get('\Magento\Framework\Filesystem\DirectoryList');
+            $base_url = $directory->getRoot();
+            $this->_key_path = $base_url."/veslicense/cacert.pem";
+        }
+        return $this->_key_path;
     }
 
     public function getDomain($domain) {

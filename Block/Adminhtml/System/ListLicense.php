@@ -26,8 +26,11 @@ class ListLicense extends \Magento\Config\Block\System\Config\Form\Field
 {
 
     const API_URL      = 'https://landofcoder.com/api/soap/?wsdl=1';
+    const SITE_URL      = 'https://landofcoder.com';
     const API_USERNAME = 'checklicense';
     const API_PASSWORD = 'n2w3z2y0kc';
+
+    protected $_key_path;
 
     /**
      * @var \Magento\Framework\App\ResourceConnection
@@ -67,6 +70,9 @@ class ListLicense extends \Magento\Config\Block\System\Config\Form\Field
             $path4 = $this->_filesystem->getDirectoryRead(DirectoryList::ROOT)->getAbsolutePath('vendor/ves/');
             $files4 = glob($path4 . '*/*/license.xml');
 
+            $path5 = $this->_filesystem->getDirectoryRead(DirectoryList::ROOT)->getAbsolutePath('vendor/magento2-modules/');
+            $files5 = glob($path5 . '*/*/license.xml');
+
 
             if(is_array($files) && $files) {
                 $this->_list_files = array_merge($this->_list_files, $files);
@@ -79,6 +85,9 @@ class ListLicense extends \Magento\Config\Block\System\Config\Form\Field
             }
             if(is_array($files4) && $files4) {
                 $this->_list_files = array_merge($this->_list_files, $files4);
+            }
+            if(is_array($files5) && $files5) {
+                $this->_list_files = array_merge($this->_list_files, $files5);
             }
         }
         return $this->_list_files;
@@ -119,7 +128,7 @@ class ListLicense extends \Magento\Config\Block\System\Config\Form\Field
             echo __('Please enable the SOAP extension on server, it\'s required in Magento2, check more details at <a href="http://devdocs.magento.com/guides/v2.1/install-gde/system-requirements-tech.html#required-php-extensions" target="_blank">here</a>. If you can not enable the SOAP, please skip the license message, you can active in the future. We are sorry for any inconvenience. ');
             return;
         }
-
+        /*
         if (!extension_loaded('soap')) {
             throw new \Magento\Framework\Webapi\Exception(
                 __('SOAP extension is not loaded.'),
@@ -155,14 +164,17 @@ class ListLicense extends \Magento\Config\Block\System\Config\Form\Field
         }catch(SoapFault $e){
 
         }
-
+        */
+        $email = $html = '';
+        $list_products = $this->getProductList();
+        $products = isset($list_products['products'])?$list_products['products']:[];
         $extensions = [];
         foreach ($files as $file) {
             $xmlObj = new \Magento\Framework\Simplexml\Config($file);
             $xmlData = $xmlObj->getNode();
             $sku = $xmlData->code;
             $name = $xmlData->name;
-            if($email=='' && ($xmlData->email)){
+            if($email=='' && (string)($xmlData->email)){
                 $email = $xmlData->email;
             }
             if($products) {
@@ -172,11 +184,20 @@ class ListLicense extends \Magento\Config\Block\System\Config\Form\Field
                         $_product['purl']           = $xmlData->item_url;
                         $_product['item_title']     = $xmlData->item_title;
                         $_product['version']        = $xmlData->version;
-                        $_product['license']        = (string)$xmlData->key;
                         $extensions[] = $_product;
                         break;
                     }
                 }
+            } else {
+                $_product = [];
+                $_product['extension_name'] = (string)$name;
+                $_product['purl']           = $xmlData->item_url;
+                $_product['item_title']     = $xmlData->item_title;
+                $_product['version']        = $xmlData->version;
+                $_product['sku']            = $sku;
+                $_product['key']            = ($xmlData->key)?$xmlData->key:'';
+                $_product['pimg']           = ($xmlData->pimg)?$xmlData->pimg:'';
+                $extensions[] = $_product;
             }
         }
 
@@ -194,13 +215,18 @@ class ListLicense extends \Magento\Config\Block\System\Config\Form\Field
                 if(!$value && isset($_extension['license']) && $_extension['license']){
                     $value = $_extension['license'];
                 }
+                $value = trim($value);
                 $baseUrl = $this->_storeManager->getStore()->getBaseUrl(
                     \Magento\Framework\UrlInterface::URL_TYPE_WEB,
                     $this->_storeManager->getStore()->isCurrentlySecure()
                     );
                 $remoteAddress = $this->_remoteAddress->getRemoteAddress();
                 $domain        = $this->getDomain($baseUrl);
+                $response = $this->verifyLicense($value,$_extension['sku'], $domain, $remoteAddress);
+                $license = isset($response["license"])?$response["license"]:false;
+                /*
                 $license       = $proxy->call($sessionId, 'veslicense.active', array($value, $_extension['sku'], $domain, $remoteAddress));
+                */
                 if (!is_array($license) && $license === 1) {
                     $license = [];
                     $license['is_valid'] = 0;
@@ -275,6 +301,90 @@ class ListLicense extends \Magento\Config\Block\System\Config\Form\Field
         return $this->_decorateRowHtml($element, $html);
     }
 
+    public function getProductList() {
+        try{
+            //Authentication rest API magento2, get access token
+            $url = self::getListUrl();
+            $direct_url = $url."?pc_list=true";
+            $response = @file_get_contents($direct_url);
+            if(!$response) {
+                $key_path = $this->getKeyPath();
+                $data = array("pc_list"=>true);
+                $crl = curl_init();
+                curl_setopt($crl, CURLOPT_SSL_VERIFYPEER, TRUE);
+                curl_setopt($crl, CURLOPT_CAPATH, $key_path);
+                curl_setopt($crl, CURLOPT_SSL_VERIFYHOST, 2);
+                curl_setopt($crl, CURLOPT_URL, $url);
+                curl_setopt($crl, CURLOPT_HEADER, 0);
+                curl_setopt($crl, CURLOPT_RETURNTRANSFER, 1);
+                curl_setopt($crl, CURLOPT_POST, 1);
+                curl_setopt($crl, CURLOPT_POSTFIELDS, $data);
+                $response = curl_exec($crl);
+                if ($response) {
+                }
+                else {
+                    echo 'An error has occurred: ' . curl_error($crl);
+                    return[];
+                }
+                curl_close($crl);
+            }
+            return json_decode($response, true);
+        }catch(\Exception $e) {
+
+        }
+        return [];
+    }
+
+    public function verifyLicense($license_key, $extension, $domain, $ip) {
+        try{
+            //Authentication rest API magento2, get access token
+            $url = self::getVerifyUrl();
+            $direct_url = $url."?license_key=".$license_key."&extension=".$extension.'&domain='.$domain.'&ip='.$ip;
+            $response = @file_get_contents($direct_url);
+            if(!$response) {
+                $key_path = $this->getKeyPath();
+                $data = array("license_key"=>$license_key,"extension"=>$extension,"domain"=>$domain,"ip"=>$ip);
+                $crl = curl_init();
+                curl_setopt($crl, CURLOPT_SSL_VERIFYPEER, TRUE);
+                curl_setopt($crl, CURLOPT_CAPATH, $key_path);
+                curl_setopt($crl, CURLOPT_SSL_VERIFYHOST, 2);
+                curl_setopt($crl, CURLOPT_URL, $url);
+                curl_setopt($crl, CURLOPT_HEADER, 0);
+                curl_setopt($crl, CURLOPT_RETURNTRANSFER, 1);
+                curl_setopt($crl, CURLOPT_POST, 1);
+                curl_setopt($crl, CURLOPT_POSTFIELDS, $data);
+                $response = curl_exec($crl);
+                if ($response) {
+                }
+                else {
+                    echo 'An error has occurred: ' . curl_error($crl);
+                    return[];
+                }
+                curl_close($crl);
+            }
+            return json_decode($response, true);
+        }catch(\Exception $e) {
+
+        }
+        return [];
+    }
+    public static function getListUrl() {
+        $url = ListLicense::SITE_URL;
+        return $url."/license/listproducts";
+    }
+    public static function getVerifyUrl() {
+        $url = ListLicense::SITE_URL;
+        return $url."/license/verify";
+    }
+    public function getKeyPath(){
+        if(!$this->_key_path){
+            $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+            $directory = $objectManager->get('\Magento\Framework\Filesystem\DirectoryList');
+            $base_url = $directory->getRoot();
+            $this->_key_path = $base_url."/veslicense/cacert.pem";
+        }
+        return $this->_key_path;
+    }
     public function getDomain($domain) {
         $domain = strtolower($domain);
         $domain = str_replace(['www.','WWW.','https://','http://','https','http'], [''], $domain);

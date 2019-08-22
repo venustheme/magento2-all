@@ -75,7 +75,7 @@ class CheckLicense implements ObserverInterface
 		$obj        = $observer->getObj();
 		$moduleName = $observer->getEx();
 		$license    = $this->licenseHelper->getLicense($moduleName);
-
+		
 		if (($license && is_bool($license)) || ($license && $license->getStatus())) {
 			$obj->setData('is_valid', 1);
 			

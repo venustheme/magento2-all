@@ -62,6 +62,11 @@
 					<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
 					<depends><field id="enable_fancybox">1</field></depends>
 				</field>
+
+				<field id="custom_css" translate="label comment" type="textarea" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+					<label>Custom CSS</label>
+					<comment>Add custom css code at here to apply it for the frontend</comment>
+				</field>
 			</group>
 		</section>
 		<section id="veslicense" translate="label" type="text" sortOrder="990" showInDefault="1" showInWebsite="1" showInStore="1">

@@ -22,6 +22,7 @@
 -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../Backend/etc/menu.xsd">
 	<menu>
+	    <add id="Ves_All::ves_all_extensions" title="Venustheme Extensions" module="Ves_All" sortOrder="10" resource="Ves_All::ves_all"/> 
 		<add id="Ves_All::ves_all" title="Venustheme" module="Ves_All" sortOrder="12" resource="Ves_All::ves_all"/> 
 		<add id="Ves_All::license" title="Ves" module="Ves_All" sortOrder="900" resource="Ves_All::license" parent="Ves_All::ves_all" />
 		<add id="Ves_All::license_manage" title="Licenses" module="Ves_All" sortOrder="6" parent="Ves_All::license" action="adminhtml/system_config/edit/section/veslicense" resource="Ves_All::config_license"/>

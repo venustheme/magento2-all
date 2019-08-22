@@ -24,4 +24,7 @@
 	<event name="ves_check_license">
 		<observer name="check_license" instance="Ves\All\Observer\CheckLicense" />
 	</event>
+	<event name="admin_system_config_save">
+		<observer name="ves_save_license_key" instance="Ves\All\Observer\AdminSystemConfigSave"/>
+	</event>
 </config>

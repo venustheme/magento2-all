@@ -108,6 +108,16 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                 \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
                 $store);
         }
+        if(!$result){
+            $result = $this->scopeConfig->getValue(
+                $group . '/' .$key,
+                \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+                null);
+        }
+        if(!$result){
+            $result = $this->scopeConfig->getValue(
+                $group . '/' .$key);
+        }
         return $result;
     }
 
