@@ -1,5 +1,5 @@
 /*Compatible magento 2 style and bootstrap 3*/
-.product-item, .product-item-info, .product-item-details {
+.product-item, .product-item-info, .product-item-details,.swatch-option {
     -webkit-box-sizing: initial;
     -moz-box-sizing: initial;
     box-sizing: initial;
