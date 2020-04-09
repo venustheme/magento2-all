@@ -215,6 +215,9 @@ class ListLicense extends \Magento\Config\Block\System\Config\Form\Field
                 if(!$value && isset($_extension['license']) && $_extension['license']){
                     $value = $_extension['license'];
                 }
+                if(!$value && isset($_extension['key']) && $_extension['key']){
+                    $value = $_extension['key'];
+                }
                 $value = trim($value);
                 $baseUrl = $this->_storeManager->getStore()->getBaseUrl(
                     \Magento\Framework\UrlInterface::URL_TYPE_WEB,

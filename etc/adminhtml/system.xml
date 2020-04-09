@@ -23,7 +23,7 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../Config/etc/system_file.xsd">
 	<system>
 		<tab id="vesalltab" translate="label" sortOrder="400">
-			<label><![CDATA[<a href="http://venustheme.com" target="_BLANK" title="Venustheme.com - Premium Magento Template Club">Venustheme.com</a>]]></label>
+			<label>Venustheme - Extensions</label>
 		</tab>
 		<section id="vesall" translate="label" type="text" showInDefault="1" showInWebsite="1" showInStore="1">
 			<class>separator-top</class>
