@@ -184,6 +184,7 @@ class ListLicense extends \Magento\Config\Block\System\Config\Form\Field
                         $_product['purl']           = $xmlData->item_url;
                         $_product['item_title']     = $xmlData->item_title;
                         $_product['version']        = $xmlData->version;
+                        $_product['key']            = ($xmlData->key)?$xmlData->key:'';
                         $extensions[] = $_product;
                         break;
                     }
