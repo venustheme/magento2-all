@@ -87,6 +87,5 @@ class CheckLicense implements ObserverInterface
 				$obj->setData('local_valid', 0);
 			}
 		}
-		$obj->setData('local_valid', 1);
 	}
 }
