@@ -1,5 +1,5 @@
 {
-    "name": "venustheme/module-all",
+    "name": "venustheme/magento2-all",
     "description": "Ves All Extension - config enable/disable common js, css files which were used on all venus extensions. For example: bootstrap, owlcarousel, colorbox, fancybox",
     "type": "magento2-module",
     "version": "1.0.2",
