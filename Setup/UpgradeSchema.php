@@ -32,43 +32,86 @@ class UpgradeSchema implements UpgradeSchemaInterface
     {
         $installer = $setup;
         $installer->startSetup();
-        $setup->getConnection()->dropTable($setup->getTable('ves_all_license'));
-        $table = $installer->getConnection()->newTable(
-            $installer->getTable('ves_all_license')
-            )
-        ->addColumn(
-            'license_id',
-            \Magento\Framework\DB\Ddl\Table::TYPE_SMALLINT,
-            null,
-            ['identity' => true, 'nullable' => false, 'primary' => true],
-            'License ID'
-            )
-        ->addColumn(
-            'extension_code',
-            Table::TYPE_TEXT,
-            255,
-            ['nullable' => false],
-            'Extension Code'
-            )
-        ->addColumn(
-            'extension_name',
-            Table::TYPE_TEXT,
-            255,
-            ['nullable' => false],
-            'Extension Name'
-            )
-        ->addColumn(
-            'status',
-            Table::TYPE_SMALLINT,
-            null,
-            ['nullable' => false],
-            'Status'
-            )
-        ->addIndex(
-            $setup->getIdxName('ves_all_license', ['license_id']),
-            ['license_id']
+        if (version_compare($context->getVersion(), '1.0.2', '<')) {
+            $setup->getConnection()->dropTable($setup->getTable('ves_all_license'));
+            $table = $installer->getConnection()->newTable(
+                $installer->getTable('ves_all_license')
+                )
+            ->addColumn(
+                'license_id',
+                \Magento\Framework\DB\Ddl\Table::TYPE_SMALLINT,
+                null,
+                ['identity' => true, 'nullable' => false, 'primary' => true],
+                'License ID'
+                )
+            ->addColumn(
+                'extension_code',
+                Table::TYPE_TEXT,
+                255,
+                ['nullable' => false],
+                'Extension Code'
+                )
+            ->addColumn(
+                'extension_name',
+                Table::TYPE_TEXT,
+                255,
+                ['nullable' => false],
+                'Extension Name'
+                )
+            ->addColumn(
+                'status',
+                Table::TYPE_SMALLINT,
+                null,
+                ['nullable' => false],
+                'Status'
+                )
+            ->addIndex(
+                $setup->getIdxName('ves_all_license', ['license_id']),
+                ['license_id']
+                );
+            $installer->getConnection()->createTable($table);
+        }
+        if (version_compare($context->getVersion(), '1.0.3', '<')) {
+            $installer->getConnection()->addColumn(
+                $installer->getTable('ves_all_license'),
+                'license',
+                [
+                    'type' => \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
+                    'nullable' => true,
+                    'comment' => 'License key'
+                ]
             );
-        $installer->getConnection()->createTable($table);
+            $installer->getConnection()->addColumn(
+                $installer->getTable('ves_all_license'),
+                'description',
+                [
+                    'type' => \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
+                    'nullable' => true,
+                    'comment' => 'module description'
+                ]
+            );
+
+            $installer->getConnection()->addColumn(
+                $installer->getTable('ves_all_license'),
+                'created_at',
+                [
+                    'type' => \Magento\Framework\DB\Ddl\Table::TYPE_TIMESTAMP,
+                    'nullable' => true,
+                    'default' => \Magento\Framework\DB\Ddl\Table::TIMESTAMP_INIT,
+                    'comment' => 'created at'
+                ]
+            );
+
+            $installer->getConnection()->addColumn(
+                $installer->getTable('ves_all_license'),
+                'expired_time',
+                [
+                    'type' => \Magento\Framework\DB\Ddl\Table::TYPE_TIMESTAMP,
+                    'nullable' => true,
+                    'comment' => 'expired time'
+                ]
+            );
+        }
         $installer->endSetup();
     }
 }
