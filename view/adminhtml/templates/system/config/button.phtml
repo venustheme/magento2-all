@@ -1,0 +1,83 @@
+<?php
+/**
+ * Copyright © Landofcoder LLC. All rights reserved.
+ * See COPYING.txt for license details.
+ * http://landofcoder.com | info@landofcoder.com
+ */
+
+/**
+ * @var $block Ves\All\Block\Adminhtml\System\Config\TestButton
+ */
+?>
+
+<script>
+    require([
+        'jquery',
+        'Magento_Ui/js/modal/alert'
+    ], function ($, alert) {
+
+        function reloadPage () {
+            setTimeout(location.reload.bind(location), 1000);
+        }
+
+        jQuery(document).ready(function() {
+            let showButton = false;
+            $("#verify_license_hidden").hide();
+            $("#config-edit-form").find('.module-license-key-wrapper').find(':input').serializeArray().map(function(field){
+                var name = field.name.match(/groups\[general\]?(\[groups\]\[landofcoder\])?\[fields\]\[(.*)\]\[value]/);
+                var fieldValue = String(field.value).trim();
+                var fieldValueArr = fieldValue.length>0?fieldValue.split("-"):[];
+                if(name && name.length == 3 && fieldValueArr.length >= 4){
+                    showButton = true;
+                }
+            });
+            if (showButton && $("#verify_button_wrapper").length > 0) {
+                var buttonVerify = $("#verify_license_hidden").clone();
+                buttonVerify.attr("id", "verify_license");
+                $("#verify_button_wrapper").append(buttonVerify);
+                $("#verify_license").show();
+                $("#verify_license").removeClass("hidden");
+                $(" #verify_license").on("click", function() {
+                    VerifyLicenseTest(); return false;
+                })
+            }
+        })
+        
+        window.VerifyLicenseTest = function(){
+            var postData = {form_key: FORM_KEY};
+            //global var configForm
+            configForm.find('.module-license-key-wrapper').find(':input').serializeArray().map(function(field){
+                var name = field.name.match(/groups\[general\]?(\[groups\]\[landofcoder\])?\[fields\]\[(.*)\]\[value]/);
+                if(name && name.length == 3){
+                    postData["module["+name[2]+"]"] = field.value;
+                }
+            });
+
+            $.ajax({
+                url: '<?php echo $block->getAdminUrl() ?>',
+                type: 'post',
+                dataType: 'html',
+                data: postData,
+                showLoader: true
+            }).done(function(response) {
+                if (typeof response === 'object') {
+                    if (response.error) {
+                        alert({ title: 'Error', content: response.message });
+                    } else if (response.ajaxRedirect) {
+                        window.location.href = response.ajaxRedirect;
+                    }
+                } else {
+                    alert({
+                        title:'',
+                        content:response,
+                        buttons: []
+                    });
+                }
+                reloadPage();
+                //configForm.submit();
+            });
+        }
+    });
+</script>
+
+<?php echo $block->getButtonHtml() ?>
