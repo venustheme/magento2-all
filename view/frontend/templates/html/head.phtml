@@ -1,14 +1,14 @@
 <?php
 $data = $this->helper("Ves\All\Helper\Data");
 $customCss = $data->getConfig('custom_css');
-$customCss = @strip_tags($customCss);
-$customCss = @trim($customCss);
+$customCss = !empty($customCss) ? @strip_tags($customCss) : $customCss;
+$customCss = !empty($customCss) ? @trim($customCss) : $customCss;
 ?>
 
-<?php if ($customCss) { ?>
+<?php if ($customCss) : ?>
 <!-- MEGAMENU CUSTOM CSS -->
 <style type="text/css">
-	<?php echo $customCss; ?>
+	<?= $customCss; ?>
 </style>
 <!-- MEGAMENU CUSTOM CSS -->
-<?php } ?>
+<?php endif; ?>
