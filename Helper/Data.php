@@ -1,18 +1,18 @@
 <?php
 /**
  * Venustheme
- * 
+ *
  * NOTICE OF LICENSE
- * 
+ *
  * This source file is subject to the venustheme.com license that is
  * available through the world-wide-web at this URL:
  * http://venustheme.com/license
- * 
+ *
  * DISCLAIMER
- * 
+ *
  * Do not edit or add to this file if you wish to upgrade this extension to newer
  * version in the future.
- * 
+ *
  * @category   Venustheme
  * @package    Ves_All
  * @copyright  Copyright (c) 2017 Landofcoder (http://www.venustheme.com/)
@@ -59,13 +59,23 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     protected $_coreRegistry;
 
     /**
-     * @param \Magento\Framework\App\Helper\Context      $context        
-     * @param \Magento\Store\Model\StoreManagerInterface $storeManager   
-     * @param \Magento\Cms\Model\Template\FilterProvider $filterProvider 
-     * @param \Magento\Framework\Filesystem              $filesystem     
-     * @param \Magento\Framework\Registry                $registry       
-     * @param \Magento\Framework\Module\Dir\Reader       $moduleReader   
-     * @param \Ves\All\Model\License                     $licnese        
+     * @var \Ves\All\Model\License
+     */
+    protected $_license;
+
+    /**
+     * @var \Magento\Framework\Module\Dir\Reader
+     */
+    protected $_moduleReader;
+
+    /**
+     * @param \Magento\Framework\App\Helper\Context      $context
+     * @param \Magento\Store\Model\StoreManagerInterface $storeManager
+     * @param \Magento\Cms\Model\Template\FilterProvider $filterProvider
+     * @param \Magento\Framework\Filesystem              $filesystem
+     * @param \Magento\Framework\Registry                $registry
+     * @param \Magento\Framework\Module\Dir\Reader       $moduleReader
+     * @param \Ves\All\Model\License                     $licnese
      */
     public function __construct(
         \Magento\Framework\App\Helper\Context $context,

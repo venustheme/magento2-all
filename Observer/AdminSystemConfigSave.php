@@ -59,7 +59,7 @@ class AdminSystemConfigSave implements ObserverInterface
         StateInterface $state,
         \Magento\Framework\App\Cache\TypeListInterface $cacheTypeList,
         \Magento\Framework\App\Cache\Frontend\Pool $cacheFrontendPool
-		) {
+	) {
         $this->configWriter = $configWriter;
         $this->objectManager = $objectManager;
         $this->_state = $state;

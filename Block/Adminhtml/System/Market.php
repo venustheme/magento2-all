@@ -1,18 +1,18 @@
 <?php
 /**
  * Venustheme
- * 
+ *
  * NOTICE OF LICENSE
- * 
+ *
  * This source file is subject to the venustheme.com license that is
  * available through the world-wide-web at this URL:
  * http://venustheme.com/license
- * 
+ *
  * DISCLAIMER
- * 
+ *
  * Do not edit or add to this file if you wish to upgrade this extension to newer
  * version in the future.
- * 
+ *
  * @category   Venustheme
  * @package    Ves_All
  * @copyright  Copyright (c) 2017 Landofcoder (http://www.venustheme.com/)
@@ -36,10 +36,10 @@ class Market extends \Magento\Config\Block\System\Config\Form\Field
 
     /**
      * [__construct description]
-     * @param \Magento\Backend\Block\Template\Context              $context       
-     * @param \Magento\Framework\App\ResourceConnection            $resource 
-     * @param \Ves\All\Helper\Data                                 $helper        
-     * @param \Magento\Framework\HTTP\PhpEnvironment\RemoteAddress $remoteAddress 
+     * @param \Magento\Backend\Block\Template\Context              $context
+     * @param \Magento\Framework\App\ResourceConnection            $resource
+     * @param \Ves\All\Helper\Data                                 $helper
+     * @param \Magento\Framework\HTTP\PhpEnvironment\RemoteAddress $remoteAddress
      */
     public function __construct(
         \Magento\Backend\Block\Template\Context $context,
@@ -47,8 +47,7 @@ class Market extends \Magento\Config\Block\System\Config\Form\Field
         \Ves\All\Helper\Data $helper,
         \Ves\All\Model\License $license,
         \Magento\Framework\HTTP\PhpEnvironment\RemoteAddress $remoteAddress
-        )
-    {
+    ) {
         parent::__construct($context);
         $this->_resource      = $resource;
         $this->_helper        = $helper;
@@ -130,7 +129,7 @@ class Market extends \Magento\Config\Block\System\Config\Form\Field
             $x++;
         }
         $html .= '</div>';
-        
+
         return $this->_decorateRowHtml($element, $html);
     }
 

@@ -1,18 +1,18 @@
 <?php
 /**
  * Venustheme
- * 
+ *
  * NOTICE OF LICENSE
- * 
+ *
  * This source file is subject to the venustheme.com license that is
  * available through the world-wide-web at this URL:
  * http://venustheme.com/license
- * 
+ *
  * DISCLAIMER
- * 
+ *
  * Do not edit or add to this file if you wish to upgrade this extension to newer
  * version in the future.
- * 
+ *
  * @category   Venustheme
  * @package    Ves_All
  * @copyright  Copyright (c) 2017 Landofcoder (http://www.venustheme.com/)
@@ -46,12 +46,22 @@ class CheckLicense implements ObserverInterface
      */
 	protected $_remoteAddress;
 
+    /**
+     * @var \Magento\Store\Model\StoreManagerInterface
+     */
+    protected $_storeManager;
+
+    /**
+     * @var \Ves\All\Helper\Data
+     */
+    protected $licenseHelper;
+
 	/**
-	 * @param \Ves\All\Model\License                               $licnese        
-	 * @param \Magento\Framework\Module\Dir\Reader                 $moduleReader   
-	 * @param \Magento\Store\Model\StoreManagerInterface           $storeManager   
-	 * @param \Magento\Framework\HTTP\PhpEnvironment\RemoteAddress $remoteAddress  
-	 * @param \Magento\Framework\Message\ManagerInterface          $messageManager 
+	 * @param \Ves\All\Model\License                               $licnese
+	 * @param \Magento\Framework\Module\Dir\Reader                 $moduleReader
+	 * @param \Magento\Store\Model\StoreManagerInterface           $storeManager
+	 * @param \Magento\Framework\HTTP\PhpEnvironment\RemoteAddress $remoteAddress
+	 * @param \Magento\Framework\Message\ManagerInterface          $messageManager
 	 */
 	public function __construct(
 		\Ves\All\Model\License $licnese,
@@ -69,16 +79,19 @@ class CheckLicense implements ObserverInterface
 		$this->licenseHelper  = $licenseHelper;
 	}
 
+    /**
+     * @inheritdoc
+     */
 	public function execute(\Magento\Framework\Event\Observer $observer)
 	{
 		$ip         = $this->_remoteAddress->getRemoteAddress();
 		$obj        = $observer->getObj();
 		$moduleName = $observer->getEx();
 		$license    = $this->licenseHelper->getLicense($moduleName);
-		
+
 		if (($license && is_bool($license)) || ($license && $license->getStatus())) {
 			$obj->setData('is_valid', 1);
-			
+
 		} else {
 			$obj->setData('is_valid',0);
 			if ($ip == '127.0.0.1') {
